@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>우리 아이 딱 맞는 아띠 찾기 🏠</title>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FFF9F0;
+    --orange: #109723;
+    --yellow: #6DC97A;
+    --text: #1A1A2E;
+    --mid: #5A5A7A;
+    --card: #FFFFFF;
+    --radius: 20px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background:
+      radial-gradient(circle at 15% 15%, rgba(16,151,35,.12) 0%, transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(16,151,35,.08) 0%, transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(155,127,212,.07) 0%, transparent 55%);
+    pointer-events:none; z-index:0;
+  }
+  .wrap { max-width:460px; margin:0 auto; padding:20px 16px 70px; position:relative; z-index:1; }
+
+  /* 인트로 */
+  .intro { text-align:center; }
+  .house { font-size:72px; display:block; animation:bob 3s ease-in-out infinite; margin-bottom:8px; }
+  @keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+  .brand { font-size:12px; font-weight:700; color:var(--orange); letter-spacing:2.5px; text-transform:uppercase; margin-bottom:10px; }
+  .intro h1 { font-size:24px; font-weight:900; color:var(--text); line-height:1.35; }
+  .intro h1 em { color:var(--orange); font-style:normal; }
+  .intro p { font-size:13px; color:var(--mid); line-height:1.65; margin-top:10px; }
+
+  /* 히어로 이미지 */
+  .hero-img-wrap {
+    width:100%; margin:22px 0;
+    border-radius:20px; overflow:hidden;
+    position:relative;
+  }
+  .hero-img {
+    width:100%; display:block;
+    border-radius:20px; object-fit:cover;
+  }
+  .hero-img-placeholder {
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:8px; width:100%; min-height:220px;
+    border:2px dashed #D8D8E8; border-radius:20px;
+    background:#F8F8FC; cursor:pointer;
+    transition:border-color .2s, background .2s;
+  }
+  .hero-img-placeholder:hover { border-color:var(--orange); background:#F0FAF1; }
+  .hero-img-placeholder-icon { font-size:40px; }
+  .hero-img-placeholder-text { font-size:14px; font-weight:700; color:var(--mid); }
+  .hero-img-placeholder-sub { font-size:12px; color:#AAAABB; }
+
+  .btn-start {
+    display:block; width:100%;
+    background:linear-gradient(135deg,var(--yellow),var(--orange));
+    color:white; font-family:'Noto Sans KR',sans-serif;
+    font-size:17px; font-weight:700; border:none;
+    border-radius:16px; padding:18px; cursor:pointer;
+    box-shadow:0 6px 20px rgba(16,151,35,.35);
+    transition:all .2s;
+  }
+  .btn-start:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(16,151,35,.45); }
+  .q-count { font-size:12px; color:var(--mid); margin-top:10px; }
+
+  /* 진행바 */
+  .prog-wrap { margin:0 0 16px; }
+  .prog-label { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--mid); font-weight:600; margin-bottom:6px; }
+  .btn-back {
+    background:none; border:none; cursor:pointer;
+    font-family:'Noto Sans KR',sans-serif; font-size:12px;
+    font-weight:600; color:var(--mid); padding:2px 0;
+    transition:color .15s; line-height:1;
+  }
+  .btn-back:hover { color:var(--text); }
+  .btn-back:disabled { opacity:0; pointer-events:none; }
+  .prog-bar { height:8px; background:#E8E8F0; border-radius:100px; overflow:hidden; }
+  .prog-fill {
+    height:100%;
+    background:linear-gradient(90deg,var(--yellow),var(--orange));
+    border-radius:100px;
+    transition:width .5s cubic-bezier(.34,1.56,.64,1);
+  }
+
+  /* 질문 카드 */
+  .q-card {
+    background:var(--card); border-radius:var(--radius);
+    padding:28px 22px 22px;
+    box-shadow:0 4px 24px rgba(0,0,0,.08);
+    animation:slideUp .4s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes slideUp { from{opacity:0;transform:translateY(22px) scale(.97)} to{opacity:1;transform:none} }
+  .q-step { font-size:11px; font-weight:700; color:var(--orange); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; }
+  .q-emoji { font-size:44px; display:block; margin-bottom:10px; }
+  .q-text { font-size:19px; font-weight:600; color:var(--text); line-height:1.4; margin-bottom:5px; }
+  .q-sub { font-size:13px; color:var(--mid); line-height:1.55; margin-bottom:22px; }
+
+  .opts { display:flex; flex-direction:column; gap:9px; }
+  .opt {
+    display:flex; align-items:center; gap:13px;
+    background:#F8F8FC; border:2px solid #EBEBF5;
+    border-radius:14px; padding:13px 15px;
+    cursor:pointer; text-align:left;
+    font-family:'Noto Sans KR',sans-serif;
+    width:100%; transition:all .18s ease;
+  }
+  .opt:hover { border-color:var(--yellow); background:#F0FAF1; transform:translateX(4px); }
+  .opt:active { transform:scale(.98); }
+  .opt-e { font-size:26px; flex-shrink:0; }
+  .opt-t { font-size:14px; font-weight:600; color:var(--text); line-height:1.35; }
+  .opt-s { font-size:12px; color:var(--mid); margin-top:2px; }
+
+  /* ── 결과 화면 ── */
+  .result { display:none; }
+  .result.show { display:block; animation:slideUp .5s cubic-bezier(.34,1.56,.64,1); }
+
+  /* 1. 성향 분석 카드 */
+  .analysis-card {
+    background:var(--text); border-radius:var(--radius);
+    padding:26px 22px; margin-bottom:20px; color:white;
+  }
+  .analysis-top { display:flex; align-items:baseline; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
+  .analysis-label { font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; opacity:.5; }
+  .analysis-type { font-family:'Gaegu',cursive; font-size:24px; font-weight:700; }
+  .analysis-keywords { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+  .analysis-kw { background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2); border-radius:100px; padding:4px 12px; font-size:12px; font-weight:600; }
+  .analysis-desc { font-size:13px; line-height:1.75; opacity:.82; }
+
+  /* 2. 아띠 카드 */
+  .arti-list-title { font-size:15px; font-weight:700; color:var(--text); margin-bottom:12px; }
+  .arti-card { background:white; border-radius:var(--radius); box-shadow:0 3px 16px rgba(0,0,0,.07); margin-bottom:12px; display:flex; overflow:hidden; }
+  .arti-card-accent { width:5px; flex-shrink:0; }
+  .arti-card-body { padding:18px 16px; flex:1; }
+  .arti-card-top { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+  .arti-card-emoji { font-size:28px; }
+  .arti-card-meta {}
+  .arti-card-name { font-size:15px; font-weight:700; color:var(--text); }
+  .arti-card-sub { font-size:11px; color:var(--mid); margin-top:1px; }
+  .arti-no1-badge { display:inline-block; background:var(--orange); color:white; font-size:10px; font-weight:700; border-radius:100px; padding:2px 8px; margin-left:6px; vertical-align:middle; }
+  .arti-card-reason { font-size:13px; color:var(--mid); line-height:1.65; margin-bottom:10px; }
+  .arti-card-tags { display:flex; flex-wrap:wrap; gap:5px; }
+  .arti-card-tag { background:#F4F4FA; border-radius:100px; padding:3px 10px; font-size:11px; font-weight:600; color:var(--mid); }
+
+  /* 3. 패키지 배너 */
+  .pkg-banner { background:linear-gradient(135deg,#EEF8EF,#D9F0DB); border:2px solid #6DC97A; border-radius:var(--radius); padding:22px 20px; margin:20px 0 12px; }
+  .pkg-banner-eyebrow { font-size:11px; font-weight:700; color:var(--orange); letter-spacing:1px; text-transform:uppercase; margin-bottom:6px; }
+  .pkg-banner-name { font-size:18px; font-weight:900; color:var(--text); margin-bottom:6px; }
+  .pkg-banner-desc { font-size:13px; color:var(--mid); line-height:1.6; margin-bottom:14px; }
+  .pkg-banner-artis { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+  .pkg-banner-arti { display:flex; align-items:center; gap:5px; background:white; border-radius:100px; padding:5px 12px; font-size:12px; font-weight:600; color:var(--text); box-shadow:0 1px 4px rgba(0,0,0,.08); }
+  .pkg-banner-price { display:flex; align-items:baseline; gap:8px; margin-bottom:14px; }
+  .pkg-banner-original { font-size:12px; color:#BBBBCC; text-decoration:line-through; }
+  .pkg-banner-sale { font-size:22px; font-weight:900; color:var(--text); }
+  .pkg-banner-discount { background:var(--orange); color:white; font-size:11px; font-weight:700; border-radius:100px; padding:3px 9px; }
+  .btn-pkg { display:block; width:100%; background:linear-gradient(135deg,var(--yellow),var(--orange)); color:white; font-family:'Noto Sans KR',sans-serif; font-size:14px; font-weight:700; border:none; border-radius:12px; padding:14px; cursor:pointer; text-align:center; text-decoration:none; box-shadow:0 3px 12px rgba(16,151,35,.3); transition:all .2s; }
+  .btn-pkg:hover { transform:translateY(-2px); }
+  .btn-reset { display:block; width:100%; background:transparent; color:var(--mid); font-family:'Noto Sans KR',sans-serif; font-size:14px; font-weight:600; border:2px solid #E0E0EE; border-radius:14px; padding:13px; cursor:pointer; transition:all .2s; margin-top:10px; }
+  .btn-reset:hover { border-color:var(--mid); color:var(--text); }
+  .hidden { display:none!important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- 인트로 -->
+<div id="intro" class="intro">
+  <span class="house">🏠</span>
+  <div class="brand">KOKOZI × 어린이날 특집</div>
+  <h1>우리 아이 딱 맞는<br><em>아띠</em> 찾기 테스트</h1>
+  <p>9개 질문으로 아이의 성향을 분석해<br>15종 아띠 중 딱 맞는 친구를 추천해드려요 ✨</p>
+
+  <!-- 아띠 이미지 영역 -->
+  <div class="hero-img-wrap">
+    <img id="heroImg" src="" alt="아띠 이미지" class="hero-img hidden" />
+    <label class="hero-img-placeholder" id="heroPlaceholder" for="heroImgInput">
+      <span class="hero-img-placeholder-icon">🏠</span>
+      <span class="hero-img-placeholder-text">아띠 이미지를 여기에 넣어주세요</span>
+      <span class="hero-img-placeholder-sub">클릭하거나 이미지를 드래그하세요</span>
+    </label>
+    <input type="file" id="heroImgInput" accept="image/*" style="display:none" onchange="loadHeroImg(this)" />
+  </div>
+
+  <button class="btn-start" onclick="start()">🎯 테스트 시작하기</button>
+  <p class="q-count">총 9문항 · 약 2분 소요</p>
+</div>
+
+<!-- 퀴즈 -->
+<div id="quiz" class="hidden">
+  <div class="prog-wrap">
+    <div class="prog-label">
+      <button class="btn-back" id="btnBack" onclick="goBack()">← 이전</button>
+      <span id="pLabel">질문 1 / 9</span>
+      <span id="pPct">11%</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="pFill" style="width:11%"></div></div>
+  </div>
+  <div class="q-card" id="qCard">
+    <div class="q-step" id="qStep">Q1</div>
+    <span class="q-emoji" id="qEmoji"></span>
+    <div class="q-text" id="qText"></div>
+    <div class="q-sub" id="qSub"></div>
+    <div class="opts" id="opts"></div>
+  </div>
+</div>
+
+<!-- 결과 -->
+<div id="result" class="result">
+
+  <!-- 1. 성향 분석 카드 -->
+  <div class="analysis-card">
+    <div class="analysis-top">
+      <div class="analysis-label">분석 완료</div>
+      <div class="analysis-type" id="analysisType"></div>
+    </div>
+    <div class="analysis-keywords" id="analysisKeywords"></div>
+    <div class="analysis-desc" id="analysisDesc"></div>
+  </div>
+
+  <!-- 2. 아띠 3종 -->
+  <div class="arti-list-title">딱 맞는 아띠 3종 🏠</div>
+
+  <div id="artiCards"></div>
+
+  <!-- 3. 패키지 (1개) -->
+  <div class="pkg-banner" id="pkgBanner">
+    <div class="pkg-banner-eyebrow">🎁 어린이날 특별 패키지</div>
+    <div class="pkg-banner-name" id="pkgBannerName"></div>
+    <div class="pkg-banner-desc" id="pkgBannerDesc"></div>
+    <div class="pkg-banner-artis" id="pkgBannerArtis"></div>
+    <div class="pkg-banner-price">
+      <span class="pkg-banner-original" id="pkgBannerOriginal"></span>
+      <span class="pkg-banner-sale" id="pkgBannerSale"></span>
+      <span class="pkg-banner-discount" id="pkgBannerDiscount"></span>
+    </div>
+    <a href="https://kokozi.com/kr/shop/arti" target="_blank" class="btn-pkg">패키지 보러가기 →</a>
+  </div>
+
+  <button class="btn-reset" onclick="reset()">↩️ 다시 테스트하기</button>
+</div>
+
+</div>
+<script defer>
+const ARTIS = {
+  brainee:  { name:"브레이니", emoji:"🚀", ip:"오리지널",     tag:"우주를 누비는 꼬마 과학자의 친구",          grad:"linear-gradient(135deg,#5BA4CF,#2E74B0)", content:["어린이과학동아","우주·지구 이야기","공룡 백과","과학 실험 동화"], forKid:"\"왜요?\"가 입에 붙은 아이, 별·공룡·곤충에 눈이 반짝이는 아이, 백과사전을 끝없이 보는 아이에게 딱이에요.", forPar:"어린이과학동아 독점 콘텐츠로 과학적 호기심을 자연스럽게 키워줘요. 스크린 없이도 지식 탐구가 가능해요.", match:"탐구심 넘치는 아이에게 최고의 지식 파트너예요!" },
+  nobel:    { name:"노벨",   emoji:"✨", ip:"오리지널",     tag:"이야기 나라를 여행하는 꼬마 모험가의 친구",    grad:"linear-gradient(135deg,#9B7FD4,#6A4FB8)", content:["세계 명작 동화","창작 판타지","전래 동화","마법 모험 이야기"], forKid:"동화책이라면 질리지 않는 아이, 상상 속 세계를 좋아하는 아이에게 완벽해요.", forPar:"국내 최고 성우진의 몰입감 있는 동화. 상상력과 언어 발달에 큰 도움이 돼요.", match:"이야기를 사랑하는 아이에게 매일 새로운 세계를 열어줄 거예요!" },
+  groovie:  { name:"그루비", emoji:"🎵", ip:"오리지널",     tag:"노래하고 춤추는 감성 뮤지컬의 친구",          grad:"linear-gradient(135deg,#F6739A,#D04575)", content:["감성 동요","국악 뮤지컬","율동 동요","감정 이야기"], forKid:"음악만 들으면 몸이 저절로 움직이는 아이, 노래를 흥얼거리고 춤추는 아이에게 최고예요.", forPar:"정서 발달과 리듬감에 탁월해요. 국악 뮤지컬로 우리 음악도 자연스럽게 익혀요.", match:"춤추고 노래하는 아이에게 매일매일 파티 친구가 될 거예요!" },
+  jubi:     { name:"쥬비",   emoji:"🌍", ip:"오리지널",     tag:"재미있게 영어를 배우는 언어 천재의 친구",      grad:"linear-gradient(135deg,#4CAF7D,#2A7A52)", content:["영어 말놀이","영어 챈트송","영어 동화","파닉스 동요"], forKid:"영어 소리에 자연스럽게 반응하는 아이, 외국어 표현에 호기심이 많은 아이에게 딱이에요.", forPar:"EBS 스타강사 케일린의 영어 말놀이 콘텐츠 탑재. 흘려듣기로 영어 귀를 자연스럽게 만들어줘요.", match:"언어 감각이 뛰어난 아이에게 가장 재미있는 영어 선생님이에요!" },
+  tobit:    { name:"토빗",   emoji:"🐰", ip:"오리지널",     tag:"재잘재잘 말놀이 고수의 친구",                  grad:"linear-gradient(135deg,#FFD84D,#FFA726)", content:["한국어 말놀이","수수께끼","동음이의어 놀이","재미있는 동요"], forKid:"수다스럽고 말하는 걸 좋아하는 아이, 말장난·수수께끼를 즐기는 아이에게 완벽해요.", forPar:"우리말의 재미를 자연스럽게 익히도록 도와줘요. 어휘력과 표현력이 부쩍 늘어나요.", match:"수다쟁이 아이에게 함께 말놀이할 최고의 단짝이에요!" },
+  chatty:   { name:"채티",   emoji:"💬", ip:"오리지널",     tag:"또박또박 말하는 언어 발달의 친구",              grad:"linear-gradient(135deg,#FF9800,#E65100)", content:["또박또박 말하기","발음 훈련","언어 발달 동요","이야기 들려주기"], forKid:"발음이 아직 서툰 아이, 말을 잘 하고 싶어 하는 아이, 표현력이 자라나는 아이에게 딱이에요.", forPar:"언어 발달 전문가가 설계한 콘텐츠. 발음·어휘·표현력을 고르게 키워줘요.", match:"언어 발달이 중요한 시기의 아이에게 가장 믿음직한 언어 친구예요!" },
+  chachacha:{ name:"차차",   emoji:"🤸", ip:"오리지널",     tag:"몸을 움직이는 에너자이저의 친구",              grad:"linear-gradient(135deg,#FF8A65,#E64A19)", content:["율동 체조","스트레칭 동요","신체 놀이 챈트","에너지 동요"], forKid:"가만히 있지 못하고 에너지가 넘치는 아이, 몸을 움직이는 걸 제일 좋아하는 아이에게 완벽해요.", forPar:"따라 하기 쉬운 율동·체조 동요로 구성. 신체 발달과 건강한 생활 습관 형성에 도움을 줘요.", match:"에너자이저 아이에게 매일 신나는 운동 파트너가 될 거예요!" },
+  kkongji:  { name:"꽁지",   emoji:"🦜", ip:"오리지널 (엄마까투리)", tag:"자연을 사랑하는 감성 소년소녀의 친구", grad:"linear-gradient(135deg,#66BB6A,#388E3C)", content:["엄마까투리 동화","가족 이야기 동요","동물 친구 동화","생태 동요"], forKid:"동물을 좋아하고 자연에 관심이 많은 아이, 가족을 사랑하고 감수성이 풍부한 아이에게 딱 맞아요.", forPar:"엄마까투리 IP 기반. 가족의 소중함과 자연의 아름다움을 담아 정서적 성장에 도움을 줘요.", match:"따뜻한 마음씨를 가진 아이에게 자연의 이야기를 들려줄 거예요!" },
+  hodangyi: { name:"호당이", emoji:"🐯", ip:"오리지널",     tag:"한국의 역사와 문화를 품은 꼬마 호랑이의 친구", grad:"linear-gradient(135deg,#FF6F00,#BF360C)", content:["한국 전래동화","역사 이야기","우리 문화 동요","한국 명절 이야기"], forKid:"전래 동화를 좋아하는 아이, 우리 문화에 관심이 있는 아이, 역사에 흥미를 보이는 아이에게 좋아요.", forPar:"한국 고유의 전통과 역사를 재미있게 풀어낸 콘텐츠. 우리 정체성을 자연스럽게 심어줘요.", match:"우리 것을 사랑하는 아이에게 한국 이야기가 가득한 호당이가 딱이에요!" },
+  hogi:     { name:"호기",   emoji:"✈️", ip:"라이선스 (슈퍼윙스)", tag:"세계 방방곡곡을 날아다니는 탐험가의 친구", grad:"linear-gradient(135deg,#42A5F5,#1565C0)", content:["슈퍼윙스 세계 탐험","나라별 문화·인사말","영어 동요","글로벌 모험"], forKid:"새로운 것에 호기심이 많고 다양한 문화에 관심을 가지는 아이, 지도 보기를 좋아하는 아이에게 딱이에요.", forPar:"슈퍼윙스 IP 기반. 세계 각국의 문화를 자연스럽게 익히며 글로벌 감각이 생겨요.", match:"세계를 향한 큰 꿈을 가진 아이에게 세상 모든 이야기를 들려줄 거예요!" },
+  pororo:   { name:"뽀로로", emoji:"🐧", ip:"라이선스 (뽀로로)",   tag:"친구들과 모험하는 꼬마 펭귄의 친구",      grad:"linear-gradient(135deg,#5C90D2,#1A4E8F)", content:["뽀로로 에피소드 동화","우정·모험 이야기","뽀로로 동요","문제 해결 이야기"], forKid:"뽀로로를 너무 좋아하는 아이, 친구와 함께 노는 걸 좋아하는 아이에게 딱이에요.", forPar:"아이들이 가장 좋아하는 뽀로로 IP의 오디오 콘텐츠. 좋아하는 캐릭터로 청각적 집중력을 키워요.", match:"뽀로로를 사랑하는 아이라면 무조건 최애 아띠가 될 거예요!" },
+  crong:    { name:"크롱",   emoji:"🦕", ip:"라이선스 (뽀로로)",   tag:"장난꾸러기 꼬마 공룡의 친구",              grad:"linear-gradient(135deg,#66BB6A,#2E7D32)", content:["크롱 모험 동화","공룡 이야기","뽀로로 동요","호기심 탐험 동화"], forKid:"공룡을 좋아하는 아이, 장난기 넘치는 아이, 아직 말이 서툰 어린 아이에게 잘 맞아요.", forPar:"말이 서툰 어린 연령에도 친근한 소리로 접근해요. 뽀로로와 함께 구성하면 시너지가 커요.", match:"공룡을 사랑하는 아이에게 귀여운 크롱이 최고의 놀이 친구가 될 거예요!" },
+  pinkfong: { name:"핑크퐁", emoji:"🌺", ip:"라이선스 (핑크퐁)",   tag:"신나는 율동과 노래의 친구",                grad:"linear-gradient(135deg,#FF7FB5,#C2185B)", content:["핑크퐁 인기 동요","율동 동요","한글·숫자 동요","핑크퐁 동화"], forKid:"핑크퐁 노래를 흥얼거리는 아이, 율동을 좋아하는 아이, 노래로 배우는 걸 즐기는 아이에게 완벽해요.", forPar:"전 세계 인기 핑크퐁 오디오 콘텐츠. 친숙한 멜로디로 자연스럽게 한글·숫자·영어까지 익혀요.", match:"핑크퐁을 사랑하는 아이에게 코코지 하우스 속 핑크퐁이 항상 함께해요!" },
+  babyshark:{ name:"아기상어",emoji:"🦈", ip:"라이선스 (핑크퐁)",  tag:"상어 가족과 함께하는 영어 동요의 친구",    grad:"linear-gradient(135deg,#26C6DA,#00838F)", content:["Baby Shark 영어 동요","상어 가족 이야기","영어 챈트","핑크퐁 영어 동요"], forKid:"아기상어를 좋아하는 아이, 영어 노래에 반응하는 아이, 율동을 즐기는 어린 아이에게 딱이에요.", forPar:"전 세계 No.1 영어 동요 Baby Shark 콘텐츠. 영어 흘려듣기의 가장 쉬운 시작점이에요.", match:"아기상어를 좋아하는 아이에게 영어가 놀이가 되는 경험을 선사해요!" },
+  leonard:  { name:"레너드", emoji:"🐻", ip:"라이선스 (레너드)",    tag:"음악과 함께하는 감성 곰돌이의 친구",       grad:"linear-gradient(135deg,#A1887F,#5D4037)", content:["레너드 감성 동요","클래식 동화","음악 감상 이야기","자장가"], forKid:"음악을 좋아하고 감수성이 풍부한 아이, 조용히 음악에 집중하는 아이에게 잘 맞아요.", forPar:"클래식 음악 기반의 감성 콘텐츠. 음악적 감수성과 정서 안정에 도움이 돼요.", match:"음악을 사랑하는 감성적인 아이에게 레너드는 가장 따뜻한 친구가 될 거예요!" }
+};
+
+const QS = [
+  {
+    emoji:"👶", text:"아이 나이가 몇 살인가요?", sub:"나이에 맞는 콘텐츠를 추천해드려요",
+    opts:[
+      { e:"🍼", t:"0~2세", s:"영아기",   sc:{ groovie:3, chachacha:3, pinkfong:2, babyshark:2, crong:2 } },
+      { e:"🐣", t:"3~4세", s:"유아 초기", sc:{ groovie:2, chachacha:2, pinkfong:2, crong:2, tobit:2, kkongji:2, chatty:2 } },
+      { e:"🌱", t:"5~6세", s:"유아 후기", sc:{ nobel:2, jubi:2, tobit:2, pororo:2, hogi:2, chatty:2, kkongji:2 } },
+      { e:"📚", t:"7세 이상", s:"초등 준비~초등", sc:{ brainee:3, jubi:3, hogi:3, hodangyi:3, nobel:2 } }
+    ]
+  },
+  {
+    emoji:"🌟", text:"아이의 가장 큰 매력은?", sub:"가장 두드러지는 특징을 골라주세요",
+    opts:[
+      { e:"🔍", t:"호기심 왕! 질문이 끝이 없어요", s:"왜요? 어떻게요? 탐구하는 걸 좋아해요", sc:{ brainee:5, hogi:3 } },
+      { e:"💬", t:"표현력이 넘쳐요, 이야기보따리예요", s:"풍부한 언어로 생각을 잘 표현해요", sc:{ tobit:5, chatty:4, jubi:2 } },
+      { e:"🎵", t:"타고난 리듬감, 음악에 바로 반응해요", s:"노래와 율동으로 세상을 표현해요", sc:{ groovie:5, chachacha:4, pinkfong:3 } },
+      { e:"📖", t:"몰입력이 대단해요, 이야기에 빠져들어요", s:"한번 집중하면 끝까지 오래 들어요", sc:{ nobel:5, kkongji:3, pororo:3 } }
+    ]
+  },
+  {
+    emoji:"🎯", text:"평소 제일 좋아하는 놀이는?", sub:"",
+    opts:[
+      { e:"🏃", t:"뛰어다니고 몸으로 노는 거!", s:"가만히 있지 못해요", sc:{ chachacha:5, groovie:3, crong:2 } },
+      { e:"🎭", t:"역할놀이, 캐릭터 인형 놀이", s:"이야기를 만들어 놀아요", sc:{ pororo:4, crong:4, nobel:3 } },
+      { e:"🔬", t:"관찰·실험·만들기", s:"탐구하는 걸 좋아해요", sc:{ brainee:5, hogi:3 } },
+      { e:"🌿", t:"자연 관찰, 동물 보기", s:"밖에서 탐험해요", sc:{ kkongji:5, brainee:3 } }
+    ]
+  },
+  {
+    emoji:"📚", text:"어떤 이야기를 더 좋아해요?", sub:"",
+    opts:[
+      { e:"🚀", t:"과학·우주·공룡 이야기", s:"신기하고 사실적인 이야기", sc:{ brainee:5, crong:2, hogi:2 } },
+      { e:"🧚", t:"마법·판타지·모험 동화", s:"상상 속 이야기", sc:{ nobel:5, pororo:3 } },
+      { e:"🏘️", t:"친구·가족·일상 이야기", s:"따뜻하고 공감되는 이야기", sc:{ pororo:4, kkongji:4, chatty:2 } },
+      { e:"🌏", t:"세계 나라·문화·역사 이야기", s:"다양한 세계의 이야기", sc:{ hogi:5, hodangyi:4 } }
+    ]
+  },
+  {
+    emoji:"🎵", text:"음악이 나오면 아이는?", sub:"",
+    opts:[
+      { e:"💃", t:"바로 춤부터 춰요", s:"온몸으로 리듬을 타요", sc:{ groovie:5, chachacha:5, pinkfong:3 } },
+      { e:"🎤", t:"따라 부르기 시작해요", s:"가사를 금방 외워요", sc:{ pinkfong:5, babyshark:5, tobit:3 } },
+      { e:"👂", t:"조용히 집중해서 들어요", s:"이야기처럼 듣는 편이에요", sc:{ leonard:5, nobel:3, brainee:3 } },
+      { e:"😄", t:"재미있으면 깔깔 웃어요", s:"유머 있는 노래를 좋아해요", sc:{ pororo:4, crong:4, tobit:3 } }
+    ]
+  },
+  {
+    emoji:"🌍", text:"영어 콘텐츠에 대한 반응은?", sub:"",
+    opts:[
+      { e:"😍", t:"영어 노래·영상을 정말 좋아해요", s:"영어 소리에 잘 반응해요", sc:{ jubi:5, babyshark:5, hogi:3 } },
+      { e:"😊", t:"관심은 있는데 아직 어색해요", s:"자연스럽게 노출하고 싶어요", sc:{ jubi:3, babyshark:3, hogi:2 } },
+      { e:"🇰🇷", t:"한국어 콘텐츠가 훨씬 더 좋아요", s:"우리말에 집중해요", sc:{ tobit:4, hodangyi:4, chatty:4, brainee:2 } },
+      { e:"🤷", t:"아직 잘 모르겠어요", s:"어릴수록 자연스럽게!", sc:{ pinkfong:3, groovie:3, kkongji:2 } }
+    ]
+  },
+  {
+    emoji:"💪", text:"아이의 에너지 레벨은?", sub:"",
+    opts:[
+      { e:"⚡", t:"핵에너자이저! 가만히 못 있어요", s:"집에서도 뛰어다녀요", sc:{ chachacha:5, groovie:3, crong:3 } },
+      { e:"🌊", t:"활발하지만 집중도 잘 해요", s:"균형 잡힌 편", sc:{ pororo:3, jubi:3, tobit:3 } },
+      { e:"🌙", t:"차분하고 조용한 편이에요", s:"집중해서 뭔가 하는 걸 좋아해요", sc:{ brainee:4, nobel:4, leonard:4, chatty:3 } },
+      { e:"🎭", t:"기분에 따라 완전 달라요", s:"예측 불가 에너지!", sc:{ pinkfong:3, crong:3, pororo:2 } }
+    ]
+  },
+  {
+    emoji:"🏠", text:"지금 아이가 가장 좋아하는 캐릭터는?", sub:"해당 IP 아띠가 있다면 추천해드려요",
+    opts:[
+      { e:"🐧", t:"뽀로로·크롱", s:"뽀롱뽀롱 뽀로로", sc:{ pororo:6, crong:6 } },
+      { e:"🌺", t:"핑크퐁·아기상어", s:"핑크퐁 시리즈", sc:{ pinkfong:6, babyshark:6 } },
+      { e:"✈️", t:"슈퍼윙스 (호기)", s:"슈퍼윙스 시리즈", sc:{ hogi:8 } },
+      { e:"🌟", t:"특별히 없어요 / 모르겠어요", s:"성향으로 추천해드려요", sc:{} }
+    ]
+  },
+  {
+    emoji:"🎁", text:"부모님이 가장 원하는 효과는?", sub:"아이에게 키워주고 싶은 것을 골라주세요",
+    opts:[
+      { e:"🧠", t:"지식·과학적 사고력", s:"탐구심, 논리력", sc:{ brainee:5, hogi:3 } },
+      { e:"💞", t:"감수성·정서 발달", s:"공감 능력, 따뜻한 마음", sc:{ groovie:4, kkongji:4, leonard:4 } },
+      { e:"🗣️", t:"언어 능력 (한국어·영어)", s:"표현력, 어휘력, 발음", sc:{ jubi:4, tobit:4, chatty:5 } },
+      { e:"🌙", t:"잘 자기·취침 루틴", s:"정서 안정, 수면 습관", sc:{ groovie:5, leonard:5, nobel:3 } },
+      { e:"🌈", t:"상상력·창의력", s:"이야기 만들기, 창의적 사고", sc:{ nobel:5, hodangyi:3, hogi:2 } }
+    ]
+  }
+];
+
+// ══════════════════════════════════════════
+//  패키지 데이터
+// ══════════════════════════════════════════
+const PACKAGES = [
+  {
+    id: 'sleep',
+    icon: '🌙',
+    name: '꿀잠 자는 아이 패키지',
+    sub: '취침 루틴 · 정서 안정 · 감성 발달',
+    originalPrice: 71700,
+    salePrice: 59900,
+    artis: [
+      { e:'🎵', name:'자장자장 그루비 아띠', desc:'편안하고 포근한 클래식 · ★4.9(212)', price:23900 },
+      { e:'🐻', name:'꿈꾸는 벨로 아띠',     desc:'따뜻한 클래식 자장가 · ★4.6(11)',   price:23900 },
+      { e:'⭐', name:'별빛친구 노바 아띠',    desc:'신비로운 밤하늘 별자리 이야기 · ★5.0(53)', price:23900 },
+    ],
+    // 이 아띠가 결과에 나오면 이 패키지를 "추천"으로 올림
+    triggerArtis: ['groovie', 'leonard', 'kkongji', 'nobel'],
+    matchMsg: '잠투정 없애주는 취침 루틴 3종 세트'
+  },
+  {
+    id: 'energy',
+    icon: '⚡',
+    name: '에너지 넘치는 아이 패키지',
+    sub: '신체 발달 · 율동 · 활동적 놀이',
+    originalPrice: 72400,
+    salePrice: 62900,
+    artis: [
+      { e:'🤸', name:'체조친구 차차 아띠',   desc:'신나는 신체활동 동요 · ★4.9(45)',       price:23900 },
+      { e:'💃', name:'댄싱머신 그루비 아띠', desc:'들을수록 빠져드는 댄스 동요 · ★4.8(78)', price:23900 },
+      { e:'🌺', name:'핑크퐁 아띠',          desc:'신나게 부르는 인기 동요 · ★4.9(283)',    price:24600 },
+    ],
+    triggerArtis: ['chachacha', 'groovie', 'pinkfong', 'crong'],
+    matchMsg: '스크린 없이 1시간 노는 활동 3종 세트'
+  },
+  {
+    id: 'imagine',
+    icon: '✨',
+    name: '상상력 풍부한 아이 패키지',
+    sub: '창의력 · 이야기 · 언어 발달',
+    originalPrice: 67700,
+    salePrice: 56900,
+    artis: [
+      { e:'✨', name:'마법사 노벨 아띠', desc:'상상력 자극 판타지 마법동화 · ★5.0(36)',  price:23900 },
+      { e:'🐰', name:'토빗 아띠',        desc:'한글과 영어로 듣는 세계 명작 동화 · ★4.9(208)', price:19900 },
+      { e:'🌍', name:'쥬비 아띠',        desc:'챈트송으로 배우는 영어 말놀이 · ★4.9(241)', price:19900 },
+    ],
+    triggerArtis: ['nobel', 'tobit', 'jubi', 'chatty'],
+    matchMsg: '책 좋아하는 아이 집중력 터지는 언어 3종 세트'
+  },
+  {
+    id: 'explorer',
+    icon: '🚀',
+    name: '호기심 탐험가 패키지',
+    sub: '과학 · 세계 문화 · 역사 탐구',
+    originalPrice: 69700,
+    salePrice: 59900,
+    artis: [
+      { e:'🚀', name:'우주인 브레이니 아띠', desc:'궁금증 폭발 우주·공룡이야기 · ★5.0(45)', price:23900 },
+      { e:'✈️', name:'슈퍼윙스 호기 아띠',  desc:'영어 동요로 떠나는 세계여행 · ★4.9(156)', price:25900 },
+      { e:'🐯', name:'호당이 아띠',          desc:'생생하고 재미있는 전래 동화 · ★5.0(197)', price:19900 },
+    ],
+    triggerArtis: ['brainee', 'hogi', 'hodangyi'],
+    matchMsg: '\'왜요?\' 아이의 지식 탐구 3종 세트'
+  },
+  {
+    id: 'pororo',
+    icon: '🐧',
+    name: '뽀로로 패밀리 패키지',
+    sub: '뽀로로 + 크롱 · 캐릭터 수집 완성',
+    originalPrice: 50500,
+    salePrice: 43900,
+    artis: [
+      { e:'🐧', name:'뽀로로 아띠', desc:'바른 생활습관과 동물 이야기 · ★4.9(263)', price:24600 },
+      { e:'🦕', name:'크롱 아띠',   desc:'뽀로로와 친구들 인기 이야기 · ★5.0(106)', price:25900 },
+    ],
+    triggerArtis: ['pororo', 'crong'],
+    matchMsg: '뽀로로 친구 둘 다! 캐릭터 수집 완성'
+  }
+];
+
+// ══════════════════════════════════════════
+//  상태
+// ══════════════════════════════════════════
+let cur = 0;
+let sc = {};
+let history = []; // 각 단계의 선택 점수 스냅샷 저장
+Object.keys(ARTIS).forEach(k => sc[k] = 0);
+
+window.loadHeroImg = function(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById('heroImg');
+    img.src = e.target.result;
+    img.classList.remove('hidden');
+    document.getElementById('heroPlaceholder').classList.add('hidden');
+  };
+  reader.readAsDataURL(file);
+}
+
+window.start = function() {
+  document.getElementById('intro').classList.add('hidden');
+  document.getElementById('quiz').classList.remove('hidden');
+  render();
+}
+
+window.goBack = goBack;
+window.reset = reset;
+
+function render() {
+  const q = QS[cur];
+  const pct = Math.round(((cur + 1) / QS.length) * 100);
+
+  document.getElementById('pLabel').textContent = `질문 ${cur+1} / ${QS.length}`;
+  document.getElementById('pPct').textContent = `${pct}%`;
+  document.getElementById('pFill').style.width = `${pct}%`;
+  document.getElementById('qStep').textContent = `Q${cur+1}`;
+  document.getElementById('qEmoji').textContent = q.emoji;
+  document.getElementById('qText').textContent = q.text;
+  document.getElementById('qSub').textContent = q.sub;
+
+  // 뒤로가기: 첫 질문이면 비활성
+  document.getElementById('btnBack').disabled = cur === 0;
+
+  const opts = document.getElementById('opts');
+  opts.innerHTML = '';
+  q.opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.innerHTML = `<span class="opt-e">${opt.e}</span><div><div class="opt-t">${opt.t}</div>${opt.s ? `<div class="opt-s">${opt.s}</div>` : ''}</div>`;
+    btn.onclick = () => pick(opt.sc);
+    opts.appendChild(btn);
+  });
+
+  const card = document.getElementById('qCard');
+  card.style.animation = 'none'; card.offsetHeight;
+  card.style.animation = 'slideUp .4s cubic-bezier(.34,1.56,.64,1)';
+}
+
+function pick(scores) {
+  // 현재 상태 스냅샷 저장 (뒤로가기용)
+  history.push({ cur, sc: {...sc} });
+  Object.entries(scores).forEach(([k, v]) => { if (sc[k] !== undefined) sc[k] += v; });
+  cur++;
+  if (cur < QS.length) render();
+  else showResult();
+}
+
+function goBack() {
+  if (history.length === 0) return;
+  const prev = history.pop();
+  cur = prev.cur;
+  sc = {...prev.sc};
+  render();
+}
+
+// 아띠 ID → 성향 그룹 매핑
+const PERSONA_MAP = {
+  brainee:   'explorer', hogi:      'explorer', hodangyi:  'explorer',
+  nobel:     'dreamer',  tobit:     'dreamer',  chatty:    'dreamer',
+  groovie:   'artist',   chachacha: 'artist',   pinkfong:  'artist',  babyshark: 'artist',
+  jubi:      'linguist', leonard:   'linguist',
+  pororo:    'social',   crong:     'social',   kkongji:   'social',
+};
+
+const PERSONAS = {
+  explorer: {
+    type: '🔭 꼬마 탐험가 타입',
+    keywords: ['호기심 폭발', '왜요? 연발', '사실 기반'],
+    desc: '우리 아이는 세상 모든 것이 궁금한 탐험가예요. "왜요?"가 입에 붙어있고, 새로운 사실을 발견하는 걸 즐기죠. 스크린보다 귀로 듣는 이야기에 더 오래 집중하는 편이에요.',
+  },
+  dreamer: {
+    type: '✨ 상상력 부자 타입',
+    keywords: ['이야기 몰입', '상상력 넘침', '언어 감각'],
+    desc: '우리 아이는 이야기 속으로 쑥 빠져드는 상상력 부자예요. 동화 주인공이 되어 모험을 떠나고, 말과 글에 남다른 감각을 보여요.',
+  },
+  artist: {
+    type: '🎵 리듬 타는 아티스트 타입',
+    keywords: ['음악에 즉각 반응', '몸이 먼저 움직임', '에너지 넘침'],
+    desc: '우리 아이는 음악만 들으면 몸이 저절로 춤추는 타고난 아티스트예요. 에너지가 넘치고, 노래와 율동으로 세상을 표현하는 걸 좋아해요.',
+  },
+  linguist: {
+    type: '🌍 언어 천재 타입',
+    keywords: ['말이 많음', '표현력 풍부', '언어 흡수 빠름'],
+    desc: '우리 아이는 언어 감각이 뛰어난 소통가예요. 새로운 단어나 소리를 빠르게 흡수하고, 한국어든 영어든 입으로 따라 하는 걸 좋아해요.',
+  },
+  social: {
+    type: '🐧 친구 사랑 소셜 타입',
+    keywords: ['캐릭터 애착 강함', '공감 능력 높음', '따뜻한 마음'],
+    desc: '우리 아이는 좋아하는 캐릭터에 강한 애착을 갖고, 친구와 함께하는 걸 좋아하는 따뜻한 아이예요. 공감 능력이 높고 이야기 속 감정을 잘 느껴요.',
+  },
+};
+
+// 아띠별 "왜 잘 맞는지" 짧은 이유 (성향 관점)
+const ARTI_REASON = {
+  brainee:   '과학 호기심을 매일 새롭게 채워줘요. 궁금한 게 많은 아이라면 백과사전보다 더 재미있어요.',
+  hogi:      '세계 곳곳의 문화를 영어와 함께 들을 수 있어요. 새로운 것에 눈 반짝이는 아이에게 딱이에요.',
+  hodangyi:  '우리 역사와 전래 동화를 생생하게 들려줘요. 호기심 많은 아이가 우리 것에 자연스럽게 빠져들어요.',
+  nobel:     '판타지 동화로 상상력을 마음껏 펼칠 수 있어요. 이야기에 빠져드는 아이라면 매일 새로운 세계예요.',
+  tobit:     '한국어 말놀이와 수수께끼로 언어 감각을 키워줘요. 수다쟁이 아이와 가장 잘 통하는 아띠예요.',
+  chatty:    '또박또박 발음과 언어 표현력을 자연스럽게 키워줘요. 말이 한창 늘어나는 시기의 아이에게 최고예요.',
+  groovie:   '동요와 국악 뮤지컬로 감성과 리듬감을 동시에 키워요. 노래가 나오면 몸이 먼저 반응하는 아이에게 딱이에요.',
+  chachacha: '율동 체조로 에너지를 건강하게 발산할 수 있어요. 가만히 못 있는 아이에게 스크린 없는 최고의 놀이예요.',
+  pinkfong:  '이미 좋아하는 핑크퐁 노래로 자연스럽게 한글과 숫자까지 익혀요. 친숙한 멜로디라 거부감이 없어요.',
+  babyshark: '아기상어 챈트로 영어 소리에 자연스럽게 노출돼요. 율동과 함께라 온몸으로 영어를 느낄 수 있어요.',
+  jubi:      '영어 챈트송으로 귀부터 열어줘요. 언어 감각이 빠른 아이라면 흘려들으면서 자연스럽게 영어가 늘어요.',
+  leonard:   '클래식 자장가와 감성 동요로 음악적 감수성을 키워줘요. 음악에 조용히 집중하는 아이에게 가장 잘 맞아요.',
+  pororo:    '좋아하는 뽀로로 캐릭터로 바른 생활습관 이야기를 들어요. 애착 캐릭터가 있으면 집중력이 훨씬 높아져요.',
+  crong:     '뽀로로 세계관 속 크롱의 호기심 탐험 이야기예요. 공룡 좋아하는 아이라면 무조건 빠져들어요.',
+  kkongji:   '엄마까투리 동화로 가족의 따뜻함을 느낄 수 있어요. 감수성 풍부한 아이의 정서 발달에 큰 도움이 돼요.',
+};
+
+function showResult() {
+  document.getElementById('quiz').classList.add('hidden');
+
+  const sorted = Object.entries(sc).sort((a, b) => b[1] - a[1]);
+  const [w1] = sorted[0];
+  const [w2] = sorted[1];
+  const [w3] = sorted[2];
+
+  // 1. 성향 분석
+  const personaId = PERSONA_MAP[w1] || 'explorer';
+  const persona = PERSONAS[personaId];
+  document.getElementById('analysisType').textContent = persona.type;
+  document.getElementById('analysisDesc').textContent = persona.desc;
+  const kwEl = document.getElementById('analysisKeywords');
+  kwEl.innerHTML = '';
+  persona.keywords.forEach(k => {
+    const s = document.createElement('span');
+    s.className = 'analysis-kw'; s.textContent = k;
+    kwEl.appendChild(s);
+  });
+
+  // 2. 아띠 3종 카드
+  const container = document.getElementById('artiCards');
+  container.innerHTML = '';
+  [w1, w2, w3].forEach((id, i) => {
+    const a = ARTIS[id];
+    // accent 색: grad 에서 첫 색상 추출
+    const accentColor = a.grad.match(/#[0-9A-Fa-f]{6}/)?.[0] || '#FFD84D';
+    const card = document.createElement('div');
+    card.className = 'arti-card';
+    card.innerHTML = `
+      <div class="arti-card-accent" style="background:${accentColor}"></div>
+      <div class="arti-card-body">
+        <div class="arti-card-top">
+          <span class="arti-card-emoji">${a.emoji}</span>
+          <div class="arti-card-meta">
+            <div class="arti-card-name">${a.name} 아띠${i === 0 ? '<span class="arti-no1-badge">1순위</span>' : ''}</div>
+            <div class="arti-card-sub">${a.tag}</div>
+          </div>
+        </div>
+        <div class="arti-card-reason">${ARTI_REASON[id]}</div>
+        <div class="arti-card-tags">${a.content.map(c => `<span class="arti-card-tag">${c}</span>`).join('')}</div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  // 3. 패키지 1개
+  renderPackage(w1, w2, w3);
+
+  const res = document.getElementById('result');
+  res.classList.add('show');
+  res.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function renderPackage(w1, w2, w3) {
+  const top3 = [w1, w2, w3];
+  const best = PACKAGES
+    .map(p => ({ p, hits: top3.filter(id => p.triggerArtis.includes(id)).length }))
+    .sort((a, b) => b.hits - a.hits)[0].p;
+
+  const discount = Math.round((1 - best.salePrice / best.originalPrice) * 100);
+
+  document.getElementById('pkgBannerName').textContent = best.name;
+  document.getElementById('pkgBannerDesc').textContent = best.matchMsg;
+  document.getElementById('pkgBannerOriginal').textContent = '₩' + best.originalPrice.toLocaleString();
+  document.getElementById('pkgBannerSale').textContent = '₩' + best.salePrice.toLocaleString();
+  document.getElementById('pkgBannerDiscount').textContent = discount + '% 할인';
+
+  const artisEl = document.getElementById('pkgBannerArtis');
+  artisEl.innerHTML = '';
+  best.artis.forEach(a => {
+    const chip = document.createElement('div');
+    chip.className = 'pkg-banner-arti';
+    chip.innerHTML = `<span>${a.e}</span><span>${a.name}</span>`;
+    artisEl.appendChild(chip);
+  });
+}
+
+function reset() {
+  cur = 0; history = []; Object.keys(sc).forEach(k => sc[k] = 0);
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('intro').classList.remove('hidden');
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+</script>
+</body>
+</html>
