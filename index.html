@@ -422,7 +422,7 @@ window.shareKakao = function() {
     content: {
       title: shareData.title || '우리 아이 딱 맞는 아띠 찾기 결과',
       description: shareData.desc || '코코지 어린이날 특집 · 아이 성향 분석 테스트',
-      imageUrl: 'https://jihyunlucia.github.io/kokozi.kids/og-image.png',
+      imageUrl: shareData.imageUrl || 'https://jihyunlucia.github.io/kokozi.kids/result_dreamer.png',
       link: {
         mobileWebUrl: 'https://jihyunlucia.github.io/kokozi.kids/',
         webUrl: 'https://jihyunlucia.github.io/kokozi.kids/',
@@ -584,11 +584,11 @@ const ARTI_REASON = {
 
 // 성향별 결과 이미지 맵 (이미지 받으면 base64로 채움)
 const RESULT_IMAGES = {
-  dreamer:  'result_dreamer.png',
-  explorer: 'result_explorer.png',
-  artist:   'result_artist.png',
-  social:   'result_social.png',
-  linguist: 'result_linguist.png',
+  dreamer:  './result_dreamer.png',
+  explorer: './result_explorer.png',
+  artist:   './result_artist.png',
+  social:   './result_social.png',
+  linguist: './result_linguist.png',
 };
 
 // 상상력 부자(dreamer) 이미지 기준 버튼 위치
@@ -641,6 +641,7 @@ function showResult() {
   shareData = {
     title: `우리 아이는 ${persona.type}이에요! 🎉`,
     desc:  `추천 패키지: ${pkg.name} · 코코지 어린이날 특집`,
+    imageUrl: `https://jihyunlucia.github.io/kokozi.kids/thumb_${personaId}.png`,
   };
 
   const res = document.getElementById('result');
