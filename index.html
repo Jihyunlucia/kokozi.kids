@@ -456,6 +456,7 @@ window.loadHeroImg = function(input) {
 window.start = function() {
   document.getElementById('intro').classList.add('hidden');
   document.getElementById('quiz').classList.remove('hidden');
+  window.scrollTo({ top:0, behavior:'instant' });
   render();
 }
 
@@ -489,6 +490,7 @@ function render() {
 
   pendingScores = null;
   document.getElementById('btnNextWrap').classList.remove('show');
+  window.scrollTo({ top:0, behavior:'instant' });
 
   const card = document.getElementById('qCard');
   card.style.animation = 'none'; card.offsetHeight;
@@ -531,6 +533,7 @@ function goBack() {
   const prev = history.pop();
   cur = prev.cur;
   sc = {...prev.sc};
+  window.scrollTo({ top:0, behavior:'instant' });
   render();
 }
 
